@@ -1,0 +1,105 @@
+{
+	"talk": {
+		"sage": [
+			"SABIO: Bienvenido, viajero.",
+			"Al norte está el Templo de los Números. Tiene 6 salas.",
+			"Tienes 15 minutos para cruzarlo. Si no lo logras, el templo gana.",
+			"En cada sala hay una inscripción con sus reglas. Léela con calma: todo lo que necesitas está escrito.",
+			"Con ESC abres el menú. En REGLAS queda guardado todo lo que aprendas.",
+			"Y recuerda: el tiempo no se detiene, ni siquiera en la pausa."
+		],
+		"villager": [
+			"Mi abuelo entró al templo hace años...",
+			"Decía que quien cuenta sus pasos nunca se pierde.",
+			"Y que a veces esperar es la forma más rápida de avanzar."
+		],
+		"sign": [
+			"TEMPLO DE LOS NÚMEROS. Tiempo máximo: 15 minutos. Entra bajo tu propio riesgo."
+		],
+		"house": [
+			"La puerta está cerrada."
+		]
+	},
+	"messages": {
+		"temple_enter": [
+			"Las puertas del templo se cierran detrás de ti.",
+			"¡El reloj de 15 minutos empezó a correr!"
+		],
+		"crushed": "¡Una piedra subió bajo tus pies! Vuelves a la entrada.",
+		"torch_out": "Tu antorcha se apagó. Vuelves a la entrada.",
+		"exit_locked": "La puerta tiene un candado. Necesitas la llave.",
+		"door_locked": "La puerta marca {target}. Tu suma es {sum}.",
+		"sum_overflow": "La suma llegó a {sum}. ¡Te pasaste! Todas las baldosas se apagan.",
+		"trap": "¡BOOM! Descubriste una trampa. El campo se reinicia y las trampas cambian de lugar.",
+		"key_banner": "¡TIENES LA LLAVE!",
+		"saved": "Partida guardada. (El tiempo sigue corriendo.)",
+		"guide_banner": "MODO GUIA: {state}",
+		"field_cleared": "¡Campo despejado! La pared agrietada del sur se derrumbó... ¡ahí está la llave!"
+	},
+	"rules": [
+		{
+			"room": -1,
+			"text": "Cruza las 6 salas en 15 minutos o el templo gana."
+		},
+		{
+			"room": -1,
+			"text": "El tiempo NO se detiene, ni en la pausa."
+		},
+		{
+			"room": 0,
+			"text": "Cada paso o espera (ESPACIO) avanza el reloj 1."
+		},
+		{
+			"room": 0,
+			"text": "Las rojas cambian cada 3 pasos. Empiezan arriba."
+		},
+		{
+			"room": 0,
+			"text": "Si una piedra sube bajo ti, vuelves a la entrada."
+		},
+		{
+			"room": 0,
+			"text": "La antorcha dura pocos pasos. Esperar también gasta."
+		},
+		{
+			"room": 1,
+			"text": "Rojas y azules se turnan: cuando unas bajan, suben las otras."
+		},
+		{
+			"room": 2,
+			"text": "Dos relojes: rojas cada 3 pasos, azules cada 4."
+		},
+		{
+			"room": 3,
+			"text": "Cada número suma una vez. Puerta: 15 exacto. Si te pasas, vuelve a 0."
+		},
+		{
+			"room": 4,
+			"text": "Z descubre la baldosa bajo tus pies; X pone bandera. Cada número cuenta las trampas vecinas, también en diagonal."
+		},
+		{
+			"room": 4,
+			"text": "Si descubres una trampa, el campo se reinicia distinto. Despeja todo para liberar la llave."
+		},
+		{
+			"room": 5,
+			"text": "Los bordes de la sala espejo están conectados."
+		},
+		{
+			"room": 5,
+			"text": "La llave abre la salida y hace que el reloj avance 2 por paso."
+		}
+	],
+	"credits": [
+		"Creado por:",
+		"{author}",
+		"",
+		"Proyecto SENA 2026",
+		"Hecho con Godot 4",
+		"",
+		"Fuente: Press Start 2P",
+		"(SIL Open Font License)",
+		"",
+		"Z: volver"
+	]
+}

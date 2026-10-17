@@ -1,0 +1,33 @@
+{
+	"name": "Pueblo Inicio",
+	"kind": "town",
+	"map": [
+		"TTTTTTT^TTTTTTT",
+		"THHHgggpgggHHHT",
+		"THHHgggpgggHHHT",
+		"THHHgfgpgfgHHHT",
+		"TgggggspggggggT",
+		"TwgggggpgggggwT",
+		"TwwppppppppppwT",
+		"TwgggfgpgygggwT",
+		"TwwggggpggggwwT",
+		"TTTTTTTTTTTTTTT"
+	],
+	"start": [7, 8],
+	"legend": {
+		"T": {"tile": "tree", "walkable": false},
+		"H": {"tile": "grass", "walkable": false, "talk": "house"},
+		"g": {"tile": "grass", "walkable": true},
+		"w": {"tile": "tall_grass", "walkable": true},
+		"p": {"tile": "path", "walkable": true},
+		"f": {"tile": "flower_red", "walkable": true},
+		"y": {"tile": "flower_yellow", "walkable": true},
+		"s": {"tile": "sign", "walkable": false, "talk": "sign"},
+		"^": {"tile": "entrance", "walkable": true, "entrance": true}
+	},
+	"houses": [{"cell": [1, 1], "sprite": 0}, {"cell": [11, 1], "sprite": 1}],
+	"npcs": [
+		{"cell": [8, 4], "sprite": 8, "talk": "sage"},
+		{"cell": [3, 7], "sprite": 9, "talk": "villager"}
+	]
+}

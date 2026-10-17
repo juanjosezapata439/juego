@@ -1,0 +1,8 @@
+# Soluciones del expositor: NO publicar (el repositorio es público)
+SOLUCIONES*.md
+03_SOLUCIONES*.md
+
+# Archivos generados por Godot
+proyecto_godot/.godot/
+proyecto_godot/export/
+*.tmp

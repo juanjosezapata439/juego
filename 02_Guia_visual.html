@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paredes Vivas · Estilos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=Fraunces:opsz,wght@9..144,600&family=Press+Start+2P&display=swap">
+<style>
+:root { --bg:#ecebe6; --fg:#1d1c22; --muted:#6b6872; --card:#ffffff; --line:#d6d3cc; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 "IBM Plex Sans", system-ui, sans-serif; padding:32px max(16px, env(safe-area-inset-left,0px)) 48px max(16px, env(safe-area-inset-right,0px)); }
+main { max-width:1180px; margin:0 auto; display:flex; flex-direction:column; gap:28px; }
+h1 { font:700 34px/1.1 "Chakra Petch", sans-serif; margin:0; }
+.lead { color:var(--muted); max-width:70ch; margin:6px 0 0; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(330px, 1fr)); gap:20px; }
+.opt { background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; min-width:0; }
+.prev { display:flex; justify-content:center; padding:18px; }
+.prev canvas { max-width:100%; display:block; }
+.body { padding:16px 18px 20px; display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--line); }
+.tag { font:600 11px/1 "IBM Plex Mono", monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.opt h2 { margin:0; font-size:22px; }
+.sw { display:flex; gap:6px; flex-wrap:wrap; }
+.sw i { width:30px; height:30px; border-radius:5px; border:1px solid rgba(0,0,0,.12); }
+ul { margin:0; padding-left:18px; color:var(--muted); }
+.rec { outline:3px solid #1d1c22; }
+.badge { align-self:flex-start; background:#1d1c22; color:#fff; font:600 11px/1 "IBM Plex Mono", monospace; letter-spacing:.08em; padding:5px 8px; border-radius:4px; }
+.tiles { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px; }
+.tiles h2 { margin:0 0 12px; font:700 20px "Chakra Petch", sans-serif; }
+.trow { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:14px; }
+.trow figure { margin:0; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:13px; color:var(--muted); text-align:center; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Paredes Vivas: elige el estilo visual</h1>
+    <p class="lead">Las tres opciones muestran el mismo nivel 5. Las reglas y las mecánicas no cambian; solo cambia cómo se ve el juego. La opción A es la que tiene el prototipo actual.</p>
+  </header>
+
+  <section class="grid">
+    <article class="opt rec">
+      <div class="prev" style="background:#12141f"><canvas data-style="neon"></canvas></div>
+      <div class="body">
+        <span class="badge">RECOMENDADA</span>
+        <span class="tag">Opción A</span>
+        <h2 style="font-family:'Chakra Petch'">Consola nocturna</h2>
+        <div class="sw"><i style="background:#12141f"></i><i style="background:#3a3f5c"></i><i style="background:#ef5a52"></i><i style="background:#4c8dff"></i><i style="background:#f4c04e"></i><i style="background:#5fd39a"></i></div>
+        <ul><li>Fondo oscuro con colores fuertes: el rojo y el azul se distinguen al instante.</li><li>Tipografía técnica (Chakra Petch), estilo de juego moderno.</li><li>Se ve bien en proyector y en celular.</li></ul>
+      </div>
+    </article>
+    <article class="opt">
+      <div class="prev" style="background:#f3efe4"><canvas data-style="paper"></canvas></div>
+      <div class="body">
+        <span class="tag">Opción B</span>
+        <h2 style="font-family:'Fraunces',serif">Papel y tinta</h2>
+        <div class="sw"><i style="background:#f3efe4"></i><i style="background:#2b2a33"></i><i style="background:#c8402f"></i><i style="background:#2f5fb3"></i><i style="background:#d99a1e"></i></div>
+        <ul><li>Parece un acertijo impreso o un juego de mesa.</li><li>Las paredes de color tienen rayas, como de lápiz.</li><li>Es elegante y "serio", pero en proyector se ve con menos contraste.</li></ul>
+      </div>
+    </article>
+    <article class="opt">
+      <div class="prev" style="background:#0d0d0d"><canvas data-style="pixel"></canvas></div>
+      <div class="body">
+        <span class="tag">Opción C</span>
+        <h2 style="font-family:'Press Start 2P';font-size:15px;line-height:1.6">Pixel retro</h2>
+        <div class="sw"><i style="background:#0d0d0d"></i><i style="background:#5a5a7a"></i><i style="background:#e83b3b"></i><i style="background:#3b7de8"></i><i style="background:#ffd23f"></i><i style="background:#41d36b"></i></div>
+        <ul><li>Bloques con relieve, estilo consola de 8 bits.</li><li>Es divertido y llamativo, y "parece juego" de inmediato.</li><li>La letra pixelada cuesta leer en textos largos, como las reglas.</li></ul>
+      </div>
+    </article>
+  </section>
+
+  <section class="tiles">
+    <h2>Piezas del tablero (opción A)</h2>
+    <div class="trow" id="tiles"></div>
+  </section>
+</main>
+<script>
+const MAP = ["####.########","#S..R..#...K#","#.####.#.##B#","#..B...R..#.#","##.#####.##..","...#E..B.....","##.#####R####","#....R.....##","####.########"];
+const STY = {
+  neon:  { floor:'#1f2233', wall:'#3a3f5c', red:'#ef5a52', blue:'#4c8dff', gold:'#f4c04e', ok:'#5fd39a', player:'#ece6d8', bg:'#12141f', grid:null, font:'"Chakra Petch"' },
+  paper: { floor:'#f3efe4', wall:'#2b2a33', red:'#c8402f', blue:'#2f5fb3', gold:'#d99a1e', ok:'#2f8a57', player:'#2b2a33', bg:'#f3efe4', grid:'#ddd6c4', font:'"Fraunces"' },
+  pixel: { floor:'#1b1b24', wall:'#5a5a7a', red:'#e83b3b', blue:'#3b7de8', gold:'#ffd23f', ok:'#41d36b', player:'#ffffff', bg:'#0d0d0d', grid:'#24242f', font:'"Press Start 2P"' },
+};
+function rr(c,x,y,w,h,r){ c.beginPath(); c.roundRect ? c.roundRect(x,y,w,h,r) : c.rect(x,y,w,h); }
+function tile(c, s, ch, px, py, CS, redSolid) {
+  const g = CS*.06;
+  c.fillStyle = s.floor; c.fillRect(px,py,CS,CS);
+  if (s.grid) { c.strokeStyle = s.grid; c.lineWidth = 1; c.strokeRect(px+.5,py+.5,CS-1,CS-1); }
+  const block = (col) => {
+    if (s === STY.pixel) { c.fillStyle = col; c.fillRect(px,py,CS,CS); c.fillStyle='rgba(255,255,255,.28)'; c.fillRect(px,py,CS,CS*.14); c.fillRect(px,py,CS*.14,CS); c.fillStyle='rgba(0,0,0,.35)'; c.fillRect(px,py+CS*.86,CS,CS*.14); c.fillRect(px+CS*.86,py,CS*.14,CS); }
+    else if (s === STY.paper && col !== s.wall) { c.save(); rr(c,px+g,py+g,CS-2*g,CS-2*g,2); c.clip(); c.strokeStyle=col; c.lineWidth=2; for(let k=-CS;k<CS*2;k+=5){ c.beginPath(); c.moveTo(px+k,py); c.lineTo(px+k-CS,py+CS); c.stroke(); } c.restore(); c.strokeStyle=col; c.lineWidth=2; rr(c,px+g,py+g,CS-2*g,CS-2*g,2); c.stroke(); }
+    else { c.fillStyle = col; rr(c,px+g,py+g,CS-2*g,CS-2*g,3); c.fill(); }
+  };
+  const open = (col) => { c.setLineDash(s===STY.pixel?[3,3]:[4,3]); c.strokeStyle=col; c.lineWidth=2; c.strokeRect(px+2*g,py+2*g,CS-4*g,CS-4*g); c.setLineDash([]); };
+  if (ch==='#') return block(s.wall);
+  if (ch==='R') return redSolid ? block(s.red) : open(s.red);
+  if (ch==='B') return redSolid ? open(s.blue) : block(s.blue);
+  if (ch==='E') { c.strokeStyle=s.ok; c.lineWidth=3; c.strokeRect(px+3*g,py+3*g,CS-6*g,CS-6*g); c.fillStyle=s.ok; c.font=`700 ${CS*.38}px ${s.font}, sans-serif`; c.textAlign='center'; c.textBaseline='middle'; c.fillText(s===STY.pixel?'X':'✕',px+CS/2,py+CS/2+1); }
+  if (ch==='K') { c.fillStyle=s.gold; c.beginPath(); c.arc(px+CS*.38,py+CS/2,CS*.16,0,7); c.fill(); c.fillRect(px+CS*.45,py+CS*.46,CS*.32,CS*.08); c.fillRect(px+CS*.66,py+CS*.5,CS*.07,CS*.14); c.fillStyle=s.floor; c.beginPath(); c.arc(px+CS*.38,py+CS/2,CS*.06,0,7); c.fill(); }
+  if (ch==='S' || ch==='P') { c.fillStyle=s.player; if (s===STY.pixel) c.fillRect(px+CS*.25,py+CS*.25,CS*.5,CS*.5); else { c.beginPath(); c.arc(px+CS/2,py+CS/2,CS*.3,0,7); c.fill(); } c.fillStyle=s.bg; c.beginPath(); c.arc(px+CS/2,py+CS/2,CS*.08,0,7); c.fill(); }
+}
+function render(cv, s) {
+  const W = MAP[0].length, H = MAP.length, CS = Math.max(18, Math.min(26, Math.floor((cv.parentElement.clientWidth-36)/W)));
+  const d = devicePixelRatio||1; cv.width=W*CS*d; cv.height=H*CS*d; cv.style.width=W*CS+'px'; cv.style.height=H*CS+'px';
+  const c = cv.getContext('2d'); c.setTransform(d,0,0,d,0,0);
+  for (let y=0;y<H;y++) for (let x=0;x<W;x++) tile(c, s, MAP[y][x], x*CS, y*CS, CS, true);
+}
+function all() {
+  document.querySelectorAll('canvas[data-style]').forEach(cv => render(cv, STY[cv.dataset.style]));
+  const T = document.getElementById('tiles'); T.innerHTML='';
+  [['#','Pared fija',true],['R','Roja sólida',true],['R','Roja abierta',false],['B','Azul sólida',false],['B','Azul abierta',true],['K','Llave',true],['E','Salida',true],['P','Jugador',true]].forEach(([ch,lab,red]) => {
+    const f=document.createElement('figure'), cv=document.createElement('canvas'), d=devicePixelRatio||1, CS=56;
+    cv.width=CS*d; cv.height=CS*d; cv.style.width=CS+'px'; cv.style.height=CS+'px'; cv.style.borderRadius='6px';
+    const c=cv.getContext('2d'); c.setTransform(d,0,0,d,0,0); tile(c, STY.neon, ch, 0, 0, CS, red);
+    f.append(cv); f.append(lab); T.append(f);
+  });
+}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(all);
+addEventListener('resize', all);
+</script>
+</body>
+</html>

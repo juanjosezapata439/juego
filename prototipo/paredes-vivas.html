@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paredes Vivas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: tablero a la izquierda, reglas siempre visibles a la derecha; en celular se apilan. Estética de consola de juego nocturna, un solo tema. */
+:root {
+  --bg: #12141f;
+  --panel: #1b1e2d;
+  --line: #2c3047;
+  --fg: #ece6d8;
+  --muted: #9a98a8;
+  --wall: #3a3f5c;
+  --floor: #1f2233;
+  --red: #ef5a52;
+  --blue: #4c8dff;
+  --gold: #f4c04e;
+  --player: #ece6d8;
+  --ok: #5fd39a;
+  --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 24px;
+}
+.wrap { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); } }
+header { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: 30px; letter-spacing: .02em; margin: 0; line-height: 1.1; }
+h1 span { color: var(--red); } h1 em { font-style: normal; color: var(--blue); }
+.sub { color: var(--muted); font-size: 13px; }
+.game { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.hud { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 520px) { .hud { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+.stat b { display: block; font-family: var(--display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.stat .v { font-family: var(--mono); font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar { height: 5px; background: var(--line); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ok); transition: width .15s; }
+.phase { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+.level-title { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.level-title h2 { font-family: var(--display); font-size: 20px; margin: 0; }
+.level-title .meta { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.board { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: flex; justify-content: center; }
+canvas { display: block; max-width: 100%; image-rendering: auto; touch-action: none; }
+.overlay { position: absolute; inset: 0; background: rgba(18, 20, 31, .88); display: flex; align-items: center; justify-content: center; border-radius: 8px; padding: 16px; text-align: center; }
+.overlay .card { max-width: 380px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.overlay h3 { font-family: var(--display); font-size: 24px; margin: 0; text-wrap: balance; }
+.overlay p { margin: 0; color: var(--muted); }
+.overlay p strong { color: var(--fg); }
+button { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .04em; background: var(--fg); color: var(--bg); border: 0; border-radius: 6px; padding: 10px 18px; cursor: pointer; }
+button.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
+.pad { display: grid; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(2, 44px); gap: 6px; }
+.pad button { padding: 0; font-size: 18px; background: var(--panel); color: var(--fg); border: 1px solid var(--line); }
+.pad .up { grid-column: 2; } .pad .left { grid-column: 1; grid-row: 2; } .pad .down { grid-column: 2; grid-row: 2; } .pad .right { grid-column: 3; grid-row: 2; }
+.side-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.keys { color: var(--muted); font-size: 13px; }
+kbd { font-family: var(--mono); font-size: 12px; background: var(--panel); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: var(--fg); }
+aside { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; min-width: 0; }
+aside h2 { font-family: var(--display); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; font-weight: 500; }
+ol.rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: flex; flex-direction: column; gap: 12px; }
+ol.rules li { counter-increment: r; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; }
+ol.rules li::before { content: counter(r); font-family: var(--mono); font-weight: 600; color: var(--bg); background: var(--muted); border-radius: 4px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+ol.rules li.new::before { background: var(--gold); }
+.legend { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 8px; }
+.sw { width: 18px; height: 18px; border-radius: 3px; flex: none; }
+.r { color: var(--red); font-weight: 600; } .bl { color: var(--blue); font-weight: 600; } .k { color: var(--gold); font-weight: 600; }
+.shake { animation: shake .18s; }
+@keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { .shake { animation: none; } .bar i { transition: none; } }
+#profe[hidden] { display: none; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Paredes <span>Vi</span><em>vas</em></h1>
+    <div class="sub">5 niveles · todas las reglas están a la vista desde el principio</div>
+  </header>
+
+  <section class="game">
+    <div class="level-title">
+      <h2 id="lvlName">Nivel 1</h2>
+      <div class="meta" id="lvlMeta"></div>
+    </div>
+    <div class="hud">
+      <div class="stat"><b>Energía</b><div class="v" id="energy">0</div><div class="bar"><i id="energyBar"></i></div></div>
+      <div class="stat"><b>Reloj</b><div class="v" id="clock">0</div></div>
+      <div class="stat"><b>Sólidas ahora</b><div class="v phase" id="phase"></div></div>
+      <div class="stat"><b>Intentos · tiempo</b><div class="v" id="tries">1 · 0:00</div></div>
+    </div>
+    <div class="board" id="board">
+      <canvas id="cv" aria-label="Tablero del laberinto"></canvas>
+      <div class="overlay" id="overlay" hidden><div class="card" id="ovCard"></div></div>
+    </div>
+    <div class="controls">
+      <div class="pad" aria-label="Controles táctiles">
+        <button class="up" data-d="U" aria-label="Arriba">↑</button>
+        <button class="left" data-d="L" aria-label="Izquierda">←</button>
+        <button class="down" data-d="D" aria-label="Abajo">↓</button>
+        <button class="right" data-d="R" aria-label="Derecha">→</button>
+      </div>
+      <div class="side-btns">
+        <button class="ghost" data-d="W">Esperar</button>
+        <button class="ghost" id="restart">Reiniciar nivel</button>
+        <button class="ghost" id="profe" hidden>Mostrar solución</button>
+      </div>
+      <div class="keys"><kbd>←↑→↓</kbd> o <kbd>WASD</kbd> moverse · <kbd>Espacio</kbd> esperar · <kbd>R</kbd> reiniciar</div>
+    </div>
+  </section>
+
+  <aside>
+    <h2>Reglas</h2>
+    <ol class="rules">
+      <li>Llega a la <strong>salida</strong>. Te mueves con las flechas, una casilla por turno.</li>
+      <li>Cada turno gasta <strong>1 de energía</strong>, también <strong>esperar</strong> (Espacio). Si la energía llega a 0 y no estás en la salida, el nivel vuelve a empezar.</li>
+      <li>Cada turno el <strong>reloj</strong> avanza 1. Cada vez que el reloj completa el número de turnos que indica el nivel, las paredes <span class="r">rojas</span> y <span class="bl">azules</span> se intercambian: solo uno de los dos colores es sólido a la vez. Al empezar, las sólidas son las <span class="r">rojas</span>.</li>
+      <li>Si una pared se vuelve sólida en la casilla donde estás parado, vuelves al inicio del nivel.</li>
+      <li>Los bordes del mapa están conectados: si sales por un lado entras por el lado opuesto, siempre que allí no haya pared.</li>
+      <li>Si el nivel tiene <span class="k">llave</span>, la salida solo se abre cuando la llevas. Mientras llevas la llave, el reloj avanza <strong>2</strong> por turno (la energía sigue bajando 1).</li>
+    </ol>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--wall)"></i>Pared fija</span>
+      <span><i class="sw" style="background:var(--floor);outline:1px solid var(--line)"></i>Piso</span>
+      <span><i class="sw" style="background:var(--red)"></i>Roja sólida</span>
+      <span><i class="sw" style="border:2px dashed var(--blue)"></i>Azul abierta</span>
+      <span><i class="sw" style="background:var(--gold);border-radius:50%"></i>Llave</span>
+      <span><i class="sw" style="border:2px solid var(--ok)"></i>Salida</span>
+    </div>
+  </aside>
+</div>
+
+<script>
+const LEVELS = [{"name":"Calentamiento","N":3,"map":["###########","#S..#.....#","#.#.#.###.#","#.#...#...#","#.#####.#.#","#...#...#.#","###.#.###.#","#.....#..E#","###########"],"max":22},{"name":"Rojo y azul","N":3,"map":["#############","#S..R...B...#","#.#####.###.#","#...B.R.#...#","###.###.#.###","#...#...R..E#","#############"],"max":20},{"name":"Bordes","N":3,"map":["#############","#S..R...#...#","#.#####.#.#.#","..#...B.#.#..","#.#.#####.#.#","..#.....#.#.#","#.#####.#.###","#.....R.#..E#","#############"],"max":19},{"name":"La llave","N":4,"map":["#############","#S...R...#..#","###.###.##.##","#K..#...B...#","#.###.###.#.#","#...B...R.#E#","#############"],"max":26},{"name":"Todo junto","N":3,"map":["####.########","#S..R..#...K#","#.####.#.##B#","#..B...R..#.#","##.#####.##..","...#E..B.....","##.#####R####","#....R.....##","####.########"],"max":26}];
+const SOL = ["UlJERFJSVVVSUlJSRERERERE","RFVERFJSUlJXUlJVREREUlJSUg==","RERMTExVVUxMREREREREUlI=","UlJERExMRFVSUlVVUlJSUkREV1JSUlJERA==","RERSRERMTExVTFVXVVVMTExEREREV0xMTEw="];
+const NEW_RULE = [[1,2], [3,4], [5], [6], []];
+const DIRS = { U: [0, -1], D: [0, 1], L: [-1, 0], R: [1, 0], W: [0, 0] };
+
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C = {}; ['--wall','--floor','--red','--blue','--gold','--player','--ok','--line','--muted','--bg'].forEach(k => C[k.slice(2)] = css(k));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let G = { lvl: 0, tries: 1, t0: null, totalTries: 0, totalTime: 0, playing: false, demo: false };
+let P; // estado del intento actual
+
+function lvl() { return LEVELS[G.lvl]; }
+function find(ch) { const m = lvl().map; for (let y = 0; y < m.length; y++) { const x = m[y].indexOf(ch); if (x >= 0) return [x, y]; } return null; }
+function cell(x, y) { return lvl().map[y][x]; }
+function phaseOf(s) { return Math.floor(s / lvl().N) % 2; } // 0 = rojas sólidas
+function solid(x, y, s) { const c = cell(x, y); if (c === '#') return true; const ph = phaseOf(s); return (c === 'R' && ph === 0) || (c === 'B' && ph === 1); }
+
+function resetAttempt() {
+  const [x, y] = find('S');
+  P = { x, y, s: 0, k: false, e: 0, keyTaken: false, fx: x, fy: y, flash: 0 };
+  draw(); hud();
+}
+
+function act(d) {
+  if (!G.playing) return;
+  const L = lvl(), H = L.map.length, W = L.map[0].length;
+  const [dx, dy] = DIRS[d];
+  let nx = P.x + dx, ny = P.y + dy, wrapped = false;
+  if (nx < 0 || nx >= W || ny < 0 || ny >= H) { nx = (nx + W) % W; ny = (ny + H) % H; wrapped = true; }
+  if (d !== 'W' && solid(nx, ny, P.s)) return bump();
+  const hasKeyLvl = !!find('K');
+  if (cell(nx, ny) === 'E' && hasKeyLvl && !P.k && !(P.keyTaken)) return bump();
+  const inc = P.k ? 2 : 1;
+  const prevPhase = phaseOf(P.s);
+  P.fx = wrapped ? nx : P.x; P.fy = wrapped ? ny : P.y;
+  P.x = nx; P.y = ny;
+  if (cell(nx, ny) === 'K' && !P.keyTaken) { P.k = true; P.keyTaken = true; }
+  P.s += inc; P.e += 1;
+  if (phaseOf(P.s) !== prevPhase) P.flash = 1;
+  animate();
+  hud();
+  if (solid(P.x, P.y, P.s)) return fail('Una pared apareció donde estabas', 'Regla 4: si una pared se vuelve sólida en tu casilla, vuelves al inicio.');
+  if (cell(P.x, P.y) === 'E') return win();
+  if (P.e >= L.max) return fail('Te quedaste sin energía', 'Regla 2: la energía no alcanzó para llegar a la salida.');
+}
+
+function bump() { const b = $('board'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+
+function fail(title, why) {
+  if (G.demo) { G.demo = false; }
+  G.playing = false;
+  setTimeout(() => overlay(`<h3>${title}</h3><p>${why}</p><button id="ovBtn">Intentar de nuevo</button>`, () => { G.tries++; resetAttempt(); G.playing = true; }), 260);
+}
+
+function win() {
+  G.playing = false;
+  const secs = elapsed();
+  const demo = G.demo; G.demo = false;
+  if (!demo) { G.totalTries += G.tries; G.totalTime += secs; }
+  const last = G.lvl === LEVELS.length - 1;
+  setTimeout(() => {
+    if (demo) return overlay(`<h3>Así se resuelve</h3><p>Solución en <strong>${P.e}</strong> turnos.</p><button id="ovBtn">Volver a jugar el nivel</button>`, () => startLevel(G.lvl));
+    if (last) return overlay(`<h3>Terminaste los 5 niveles</h3><p>Intentos totales: <strong>${G.totalTries}</strong><br>Tiempo total: <strong>${fmt(G.totalTime)}</strong></p><p>Avísale al expositor tu resultado.</p><button id="ovBtn">Jugar otra vez</button>`, () => { G.totalTries = 0; G.totalTime = 0; startLevel(0); });
+    overlay(`<h3>Nivel ${G.lvl + 1} superado</h3><p>Intentos: <strong>${G.tries}</strong> · Tiempo: <strong>${fmt(secs)}</strong><br>Energía usada: <strong>${P.e}/${lvl().max}</strong></p><button id="ovBtn">Siguiente nivel</button>`, () => startLevel(G.lvl + 1));
+  }, 260);
+}
+
+function startLevel(i) {
+  G.lvl = i; G.tries = 1; G.t0 = null; G.playing = false;
+  try { localStorage.setItem('pv-lvl', String(i)); } catch (e) {}
+  sizeCanvas(); resetAttempt(); markRules();
+  const L = lvl();
+  const extra = find('K') ? '<br>Este nivel tiene <strong>llave</strong>.' : '';
+  overlay(`<h3>Nivel ${i + 1}: ${L.name}</h3><p>Energía: <strong>${L.max}</strong> turnos<br>Las paredes cambian cada <strong>${L.N}</strong> del reloj${extra}</p><p>Lee las reglas antes de empezar. El tiempo corre desde tu primer movimiento.</p><button id="ovBtn">Empezar</button>`, () => { G.playing = true; });
+}
+
+function overlay(html, onBtn) {
+  $('ovCard').innerHTML = html; $('overlay').hidden = false;
+  const b = $('ovBtn'); b.focus();
+  b.onclick = () => { $('overlay').hidden = true; onBtn(); };
+}
+
+function markRules() {
+  document.querySelectorAll('ol.rules li').forEach((li, idx) => li.classList.toggle('new', NEW_RULE[G.lvl].includes(idx + 1)));
+}
+
+function elapsed() { return G.t0 ? Math.floor((Date.now() - G.t0) / 1000) : 0; }
+function fmt(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+function hud() {
+  const L = lvl();
+  $('lvlName').textContent = `Nivel ${G.lvl + 1} de ${LEVELS.length}: ${L.name}`;
+  $('lvlMeta').textContent = `Cambio cada ${L.N} del reloj` + (P.k ? ' · llevas la llave (reloj ×2)' : '');
+  const left = L.max - P.e;
+  $('energy').textContent = `${left}/${L.max}`;
+  $('energyBar').style.width = (left / L.max * 100) + '%';
+  $('energyBar').style.background = left <= 3 ? C.red : C.ok;
+  const next = L.N - (P.s % L.N);
+  $('clock').textContent = `${P.s} · cambia en ${next}`;
+  const ph = phaseOf(P.s);
+  $('phase').innerHTML = `<i class="dot" style="background:${ph === 0 ? C.red : C.blue}"></i>${ph === 0 ? 'Rojas' : 'Azules'}`;
+  $('tries').textContent = `${G.tries} · ${fmt(elapsed())}`;
+}
+
+// ---------- dibujo ----------
+let CS = 40;
+function sizeCanvas() {
+  const L = lvl(), W = L.map[0].length, H = L.map.length;
+  const avail = $('board').clientWidth - 30;
+  CS = Math.max(18, Math.min(48, Math.floor(avail / W)));
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = W * CS * dpr; cv.height = H * CS * dpr;
+  cv.style.width = W * CS + 'px'; cv.style.height = H * CS + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+
+function draw() {
+  if (!P) return;
+  const L = lvl(), m = L.map, H = m.length, W = m[0].length;
+  ctx.clearRect(0, 0, W * CS, H * CS);
+  const g = Math.max(1, CS * 0.06);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const c = m[y][x], px = x * CS, py = y * CS;
+    ctx.fillStyle = C.floor; ctx.fillRect(px, py, CS, CS);
+    if (c === '#') { ctx.fillStyle = C.wall; rr(px + g / 2, py + g / 2, CS - g, CS - g, 3); ctx.fill(); continue; }
+    if (c === 'R' || c === 'B') {
+      const col = c === 'R' ? C.red : C.blue;
+      if (solid(x, y, P.s)) {
+        ctx.fillStyle = col; rr(px + g, py + g, CS - 2 * g, CS - 2 * g, 3); ctx.fill();
+        if (P.flash > 0) { ctx.fillStyle = `rgba(255,255,255,${0.5 * P.flash})`; ctx.fill(); }
+      } else {
+        ctx.setLineDash([4, 3]); ctx.strokeStyle = col; ctx.lineWidth = 2;
+        rr(px + 2 * g, py + 2 * g, CS - 4 * g, CS - 4 * g, 3); ctx.stroke(); ctx.setLineDash([]);
+      }
+    }
+    // aberturas en el borde
+    if ((x === 0 || y === 0 || x === W - 1 || y === H - 1) && c !== '#') {
+      ctx.fillStyle = C.muted; ctx.globalAlpha = .55;
+      const cx = px + CS / 2, cy = py + CS / 2, a = CS * 0.16;
+      ctx.beginPath();
+      if (x === 0) { ctx.moveTo(px + 3, cy); ctx.lineTo(px + 3 + a, cy - a); ctx.lineTo(px + 3 + a, cy + a); }
+      else if (x === W - 1) { ctx.moveTo(px + CS - 3, cy); ctx.lineTo(px + CS - 3 - a, cy - a); ctx.lineTo(px + CS - 3 - a, cy + a); }
+      else if (y === 0) { ctx.moveTo(cx, py + 3); ctx.lineTo(cx - a, py + 3 + a); ctx.lineTo(cx + a, py + 3 + a); }
+      else { ctx.moveTo(cx, py + CS - 3); ctx.lineTo(cx - a, py + CS - 3 - a); ctx.lineTo(cx + a, py + CS - 3 - a); }
+      ctx.fill(); ctx.globalAlpha = 1;
+    }
+    if (c === 'E') {
+      const locked = !!find('K') && !P.k;
+      ctx.strokeStyle = locked ? C.muted : C.ok; ctx.lineWidth = 3;
+      rr(px + 3 * g, py + 3 * g, CS - 6 * g, CS - 6 * g, 4); ctx.stroke();
+      ctx.fillStyle = locked ? C.muted : C.ok;
+      ctx.font = `700 ${Math.floor(CS * 0.42)}px "Chakra Petch", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(locked ? '✕' : '⇲', px + CS / 2, py + CS / 2 + 1);
+    }
+    if (c === 'S') { ctx.fillStyle = C.line; ctx.font = `700 ${Math.floor(CS * 0.32)}px "Chakra Petch", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('INI', px + CS / 2, py + CS / 2); }
+    if (c === 'K' && !P.keyTaken) {
+      ctx.fillStyle = C.gold; ctx.beginPath(); ctx.arc(px + CS * 0.38, py + CS / 2, CS * 0.16, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(px + CS * 0.45, py + CS * 0.46, CS * 0.32, CS * 0.08);
+      ctx.fillRect(px + CS * 0.66, py + CS * 0.5, CS * 0.07, CS * 0.14);
+      ctx.fillStyle = C.floor; ctx.beginPath(); ctx.arc(px + CS * 0.38, py + CS / 2, CS * 0.06, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // jugador
+  const px = P.fx * CS + CS / 2, py = P.fy * CS + CS / 2;
+  ctx.fillStyle = C.player; ctx.beginPath(); ctx.arc(px, py, CS * 0.3, 0, Math.PI * 2); ctx.fill();
+  if (P.k) { ctx.strokeStyle = C.gold; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(px, py, CS * 0.38, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.fillStyle = C.bg; ctx.beginPath(); ctx.arc(px, py, CS * 0.08, 0, Math.PI * 2); ctx.fill();
+}
+
+let raf = null;
+function animate() {
+  if (reduce) { P.fx = P.x; P.fy = P.y; P.flash = 0; draw(); return; }
+  cancelAnimationFrame(raf);
+  const tick = () => {
+    P.fx += (P.x - P.fx) * 0.45; P.fy += (P.y - P.fy) * 0.45; P.flash = Math.max(0, P.flash - 0.08);
+    if (Math.abs(P.x - P.fx) < 0.02 && Math.abs(P.y - P.fy) < 0.02) { P.fx = P.x; P.fy = P.y; }
+    draw();
+    if (P.fx !== P.x || P.fy !== P.y || P.flash > 0) raf = requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+// ---------- entrada ----------
+function input(d) {
+  if (G.demo) return;
+  if (G.playing && !G.t0) G.t0 = Date.now();
+  act(d);
+}
+const KEYMAP = { ArrowUp: 'U', ArrowDown: 'D', ArrowLeft: 'L', ArrowRight: 'R', w: 'U', s: 'D', a: 'L', d: 'R', W: 'U', S: 'D', A: 'L', D: 'R', ' ': 'W' };
+addEventListener('keydown', e => {
+  if (!$('overlay').hidden) return;
+  if (KEYMAP[e.key]) { e.preventDefault(); input(KEYMAP[e.key]); }
+  else if ((e.key === 'r' || e.key === 'R') && G.playing && !G.demo) { G.tries++; resetAttempt(); }
+});
+document.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => input(b.dataset.d)));
+$('restart').onclick = () => { if (G.playing && !G.demo) { G.tries++; resetAttempt(); } };
+addEventListener('resize', () => { sizeCanvas(); draw(); });
+setInterval(() => { if (G.playing && P) $('tries').textContent = `${G.tries} · ${fmt(elapsed())}`; }, 500);
+
+// modo expositor: abrir con #profe al final del enlace
+if (location.hash === '#profe') {
+  $('profe').hidden = false;
+  $('profe').onclick = () => {
+    $('overlay').hidden = true;
+    resetAttempt(); G.playing = true; G.demo = true;
+    const steps = atob(SOL[G.lvl]).split('');
+    let i = 0;
+    const run = () => { if (!G.demo || i >= steps.length) return; act(steps[i++]); setTimeout(run, 380); };
+    setTimeout(run, 300);
+  };
+}
+
+let saved = 0; try { saved = Math.min(LEVELS.length - 1, parseInt(localStorage.getItem('pv-lvl') || '0', 10) || 0); } catch (e) {}
+document.fonts && document.fonts.ready.then(() => draw());
+startLevel(saved);
+</script>
+
+</html>

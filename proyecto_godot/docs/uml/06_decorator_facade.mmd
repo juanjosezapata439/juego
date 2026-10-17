@@ -1,0 +1,51 @@
+classDiagram
+    direction TB
+    class StepPace {
+        <<Component>>
+        +ticks() int
+        +describe() String
+    }
+    class NormalPace {
+        <<ConcreteComponent>>
+        +ticks() int
+    }
+    class PaceDecorator {
+        <<Decorator>>
+        #inner: StepPace
+        +ticks() int
+    }
+    class KeyPaceDecorator {
+        <<ConcreteDecorator>>
+        +ticks() int
+    }
+    class Player {
+        +pace: StepPace
+        +grant_key()
+    }
+    class KeyTile {
+        +on_enter(ctx)
+    }
+    StepPace <|-- NormalPace
+    StepPace <|-- PaceDecorator
+    PaceDecorator <|-- KeyPaceDecorator
+    PaceDecorator o-- StepPace : envuelve
+    Player --> StepPace
+    KeyTile ..> Player : grant_key()
+    SecretAlcoveTile ..> Player : grant_key()
+
+    class AudioService {
+        <<Facade>>
+        +play_sfx(sound)
+        +play_music(track)
+        +set_volume(bus, level)
+    }
+    class AudioServer {
+        <<Godot>>
+    }
+    class AudioStreamPlayer {
+        <<Godot>>
+    }
+    AudioService ..> AudioServer : oculta
+    AudioService *-- AudioStreamPlayer : oculta
+    SettingsRepository --> AudioService
+    SoundObserver --> AudioService

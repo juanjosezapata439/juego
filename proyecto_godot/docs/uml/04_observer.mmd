@@ -1,0 +1,61 @@
+classDiagram
+    direction LR
+    class EventBus {
+        <<Subject>>
+        -_subscribers: Dictionary
+        +subscribe(event, callback)
+        +unsubscribe(event, callback)
+        +publish(event, payload)
+    }
+    class GameEvents {
+        <<enumeration>>
+        STEP
+        BUMP
+        STONES_TOGGLED
+        KEY_PICKED
+        PLAYER_FELL
+        ROOM_ENTERED
+        ROOM_CLEARED
+        TIME_WARNING
+        TIME_UP
+    }
+    class SoundObserver {
+        <<Observer>>
+        -_audio: AudioService
+    }
+    class StatsObserver {
+        <<Observer>>
+        -_stats: GameStats
+        -_on_fell(payload)
+        -_on_cleared(payload)
+    }
+    class RuleBookObserver {
+        <<Observer>>
+        -_book: RuleBook
+        -_on_room_entered(payload)
+    }
+    class PlayState {
+        <<Observer>>
+        -_show_banner(text)
+    }
+    class ClockRules {
+        <<Publisher>>
+    }
+    class KeyTile {
+        <<Publisher>>
+    }
+    class CountdownTimer {
+        <<Publisher>>
+        +tick(delta)
+    }
+    EventBus ..> GameEvents
+    SoundObserver ..> EventBus : se suscribe
+    StatsObserver ..> EventBus : se suscribe
+    RuleBookObserver ..> EventBus : se suscribe
+    PlayState ..> EventBus : se suscribe
+    ClockRules ..> EventBus : publica
+    KeyTile ..> EventBus : publica
+    CountdownTimer ..> EventBus : publica
+    SoundObserver --> AudioService
+    StatsObserver --> GameStats
+    RuleBookObserver --> RuleBook

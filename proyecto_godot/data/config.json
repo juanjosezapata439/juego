@@ -1,0 +1,92 @@
+{
+	"title": "PAREDES VIVAS",
+	"author": "TU NOMBRE AQUI",
+	"time_limit_sec": 900,
+	"time_warning_sec": 60,
+	"secret_code": "PROFE",
+	"move_times": [
+		0.22,
+		0.15,
+		0.09
+	],
+	"text_speeds": [
+		25,
+		50,
+		1000
+	],
+	"dialog_line_chars": 26,
+	"default_settings": {
+		"music": 6,
+		"sfx": 7,
+		"sens": 1,
+		"text": 1,
+		"full": false,
+		"hud": true
+	},
+	"controls": {
+		"up": [
+			"Up",
+			"W"
+		],
+		"down": [
+			"Down",
+			"S"
+		],
+		"left": [
+			"Left",
+			"A"
+		],
+		"right": [
+			"Right",
+			"D"
+		],
+		"accept": [
+			"Z",
+			"Enter",
+			"Kp Enter"
+		],
+		"cancel": [
+			"X",
+			"Backspace"
+		],
+		"pause": [
+			"Escape",
+			"Enter"
+		],
+		"wait": [
+			"Space"
+		],
+		"fullscreen": [
+			"F11"
+		],
+		"flag": [
+			"X",
+			"C"
+		]
+	},
+	"music": {
+		"title": "music_title",
+		"town": "music_town",
+		"temple": "music_temple"
+	},
+	"sounds": {
+		"step": "step",
+		"bump": "bump",
+		"stones_toggled": "stone",
+		"key_picked": "key",
+		"room_cleared": "door",
+		"temple_entered": "door",
+		"trap_triggered": "trap",
+		"player_fell": "fail",
+		"menu_move": "select",
+		"menu_confirm": "confirm",
+		"dialog_char": "text",
+		"time_warning": "tick",
+		"sum_changed": "sum",
+		"flag_toggled": "flag",
+		"game_won": "win",
+		"game_lost": "lose",
+		"guide_toggled": "confirm",
+		"field_cleared": "door"
+	}
+}

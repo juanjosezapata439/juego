@@ -1,0 +1,65 @@
+classDiagram
+    direction TB
+    class Room {
+        +rules: RoomRules
+        +tile_at(cell) Tile
+    }
+    class PlayState {
+        +act(action)
+    }
+    class RoomRules {
+        <<interface>>
+        +setup(room)
+        +reset_attempt(room)
+        +allows_wait() bool
+        +current_clock() int
+        +after_step(ctx: StepContext)
+        +on_player_action(ctx, action) bool
+        +hud_items(room) Array
+        +guide_path(room) String
+        +music() String
+    }
+    class ClockRules {
+        +red_period: int
+        +blue_period: int
+        +torch: int
+        +clock: int
+        +after_step(ctx)
+        +guide_path(room) String
+    }
+    class SumRules {
+        +target: int
+        +total: int
+        +after_step(ctx)
+        +guide_path(room) String
+    }
+    class MinesRules {
+        +mine_count: int
+        +generated: bool
+        +cleared: bool
+        +on_player_action(ctx, action) bool
+        +reveal(room, cell)
+    }
+    class MinefieldGenerator {
+        +generate(cells, mine_count, first) Dictionary
+        +is_solvable(field, mines, first)$ bool
+    }
+    class TownRules {
+        +music() String
+    }
+    class StepContext {
+        +ticks: int
+        +fell_message: String
+        +cleared: bool
+        +messages: Array
+        +fall(message)
+    }
+    PlayState --> Room
+    PlayState ..> StepContext : crea
+    Room --> RoomRules
+    RoomRules <|.. ClockRules
+    RoomRules <|.. SumRules
+    RoomRules <|.. MinesRules
+    RoomRules <|.. TownRules
+    RoomRules ..> StepContext : decide
+    MinesRules *-- MinefieldGenerator

@@ -1,0 +1,53 @@
+classDiagram
+    direction TB
+    class Game {
+        -_process(delta)
+        -_unhandled_input(event)
+        -_draw()
+    }
+    class StateMachine {
+        +current: GameState
+        +add(name, state)
+        +change(name, params)
+        +get_state(name) GameState
+    }
+    class GameState {
+        <<abstract>>
+        #game: Game
+        +enter(params)
+        +exit()
+        +handle_input(actions)
+        +update(delta)
+        +draw(ui)
+        +timer_runs() bool
+    }
+    class TitleState
+    class MenuState
+    class SettingsState {
+        +timer_runs() bool
+    }
+    class CreditsState
+    class PlayState {
+        +act(action)
+        +interact()
+        +timer_runs() bool
+    }
+    class PauseState {
+        +timer_runs() bool
+    }
+    class BookState {
+        +timer_runs() bool
+    }
+    class EndState
+    Game *-- StateMachine
+    StateMachine o-- "*" GameState
+    GameState <|-- TitleState
+    GameState <|-- MenuState
+    GameState <|-- SettingsState
+    GameState <|-- CreditsState
+    GameState <|-- PlayState
+    GameState <|-- PauseState
+    GameState <|-- BookState
+    GameState <|-- EndState
+    MenuState *-- MenuList
+    PauseState *-- MenuList

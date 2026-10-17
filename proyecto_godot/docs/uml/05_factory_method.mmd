@@ -1,0 +1,75 @@
+classDiagram
+    direction TB
+    class RoomBuilder {
+        <<abstract Creator>>
+        +build(data, index) Room
+        +create_rules(data)* RoomRules
+        +create_tile(symbol, cell, data) Tile
+        +decorate(room, data)
+        +layout_origin(room) Vector2
+    }
+    class ClockRoomBuilder {
+        +create_rules(data) RoomRules
+        +create_tile(symbol, cell, data) Tile
+    }
+    class SumRoomBuilder {
+        +create_rules(data) RoomRules
+        +create_tile(symbol, cell, data) Tile
+    }
+    class MinesRoomBuilder {
+        +create_rules(data) RoomRules
+        +create_tile(symbol, cell, data) Tile
+    }
+    class TownBuilder {
+        +create_rules(data) RoomRules
+        +create_tile(symbol, cell, data) Tile
+        +decorate(room, data)
+    }
+    class RoomBuilderRegistry {
+        +register(kind, builder)
+        +build(data, index) Room
+    }
+    class Tile {
+        <<abstract Product>>
+        +is_solid(room) bool
+        +on_enter(ctx)
+        +on_interact(ctx)
+        +draw(ui, at, room)
+    }
+    class WallTile
+    class FloorTile
+    class ExitTile
+    class StoneTile {
+        +up_at(clock) bool
+    }
+    class KeyTile
+    class NumberTile {
+        +activate() bool
+    }
+    class DoorTile
+    class FieldTile
+    class SecretAlcoveTile
+    class TownTile
+    RoomBuilderRegistry o-- RoomBuilder
+    RoomBuilder <|-- ClockRoomBuilder
+    RoomBuilder <|-- SumRoomBuilder
+    RoomBuilder <|-- MinesRoomBuilder
+    RoomBuilder <|-- TownBuilder
+    RoomBuilder ..> Tile : crea
+    Tile <|-- WallTile
+    Tile <|-- FloorTile
+    Tile <|-- ExitTile
+    Tile <|-- StoneTile
+    Tile <|-- KeyTile
+    Tile <|-- NumberTile
+    Tile <|-- DoorTile
+    Tile <|-- FieldTile
+    Tile <|-- TownTile
+    Tile <|-- SecretAlcoveTile
+    ClockRoomBuilder ..> StoneTile : crea
+    ClockRoomBuilder ..> KeyTile : crea
+    SumRoomBuilder ..> NumberTile : crea
+    SumRoomBuilder ..> DoorTile : crea
+    MinesRoomBuilder ..> FieldTile : crea
+    MinesRoomBuilder ..> SecretAlcoveTile : crea
+    TownBuilder ..> TownTile : crea

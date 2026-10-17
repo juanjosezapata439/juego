@@ -1,0 +1,60 @@
+classDiagram
+    direction LR
+    class Game {
+        +data: DataRepository
+        +bus: EventBus
+        +audio: AudioService
+        +session: GameSession
+        +machine: StateMachine
+        +timer: CountdownTimer
+        +start_new_game()
+        +enter_temple(on_ready)
+        +finish(won)
+    }
+    class StateMachine {
+        +current: GameState
+        +change(name, params)
+    }
+    class GameSession {
+        +room: Room
+        +player: Player
+        +load_town()
+        +load_room(index)
+    }
+    class RoomBuilderRegistry {
+        +register(kind, builder)
+        +build(data, index) Room
+    }
+    class Room {
+        +rules: RoomRules
+        +tile_at(cell) Tile
+        +neighbor(cell, dir)
+        +reset_attempt()
+    }
+    class Player {
+        +pace: StepPace
+        +grant_key()
+    }
+    class EventBus {
+        +subscribe(event, callback)
+        +publish(event, payload)
+    }
+    class DataRepository {
+        +config
+        +rooms
+        +texts
+    }
+    Game *-- StateMachine
+    Game *-- GameSession
+    Game *-- EventBus
+    Game *-- DataRepository
+    Game *-- AudioService
+    Game *-- CountdownTimer
+    GameSession --> RoomBuilderRegistry : crea salas con
+    GameSession *-- Player
+    GameSession --> Room
+    Room o-- "*" Tile
+    Room --> RoomRules : estrategia
+    Player --> StepPace : decorador
+    CountdownTimer --> EventBus : publica
+    RoomBuilderRegistry o-- "*" RoomBuilder

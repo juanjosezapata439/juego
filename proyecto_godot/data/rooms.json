@@ -1,0 +1,167 @@
+{
+	"legend": {
+		"#": "muro",
+		".": "piso",
+		"S": "entrada",
+		"E": "salida",
+		"R": "piedra roja",
+		"B": "piedra azul",
+		"K": "llave",
+		"D": "puerta numerica",
+		"1-9": "baldosa con numero",
+		"?": "baldosa del campo (trampas generadas al jugar)",
+		"A": "pared agrietada con la llave"
+	},
+	"rooms": [
+		{
+			"name": "Sala de la Piedra",
+			"kind": "clock",
+			"red_period": 3,
+			"blue_period": 3,
+			"torch": 28,
+			"wrap": false,
+			"map": [
+				"#############",
+				"#S..#...R...#",
+				"#.#.#.#####.#",
+				"#.#...#...#.#",
+				"#.#####.#.#.#",
+				"#...R...#..E#",
+				"#############"
+			],
+			"intro": [
+				"Una inscripción en la pared dice:",
+				"Las piedras ROJAS suben y bajan cada 3 pasos. Al entrar, están arriba.",
+				"Si una piedra sube donde estás parado, vuelves a la entrada de la sala.",
+				"Tu antorcha dura pocos pasos. Si se apaga, también vuelves a la entrada.",
+				"Con ESPACIO esperas un paso sin moverte. Esperar también gasta antorcha."
+			]
+		},
+		{
+			"name": "Rojo y Azul",
+			"kind": "clock",
+			"red_period": 3,
+			"blue_period": 3,
+			"torch": 22,
+			"wrap": false,
+			"map": [
+				"#############",
+				"#S..R...B...#",
+				"#.#####.###.#",
+				"#...B.R.#...#",
+				"###.###.#.###",
+				"#...#...R..E#",
+				"#############"
+			],
+			"intro": [
+				"Ahora también hay piedras AZULES.",
+				"Rojas y azules se turnan: cuando unas bajan, las otras suben. Ambas cada 3 pasos."
+			]
+		},
+		{
+			"name": "Dos Relojes",
+			"kind": "clock",
+			"red_period": 3,
+			"blue_period": 4,
+			"torch": 22,
+			"wrap": false,
+			"map": [
+				"#############",
+				"#S...R..B...#",
+				"#.###.#####.#",
+				"#...#.B...#.#",
+				"###.#.###R#.#",
+				"#.B.R...#...#",
+				"#.#####.#.###",
+				"#...B...R..E#",
+				"#############"
+			],
+			"intro": [
+				"Aquí cada color tiene su propio reloj.",
+				"Las ROJAS cambian cada 3 pasos. Las AZULES cambian cada 4 pasos.",
+				"Al entrar, las rojas están arriba y las azules abajo."
+			]
+		},
+		{
+			"name": "Puerta Numerica",
+			"kind": "sum",
+			"target": 15,
+			"torch": 0,
+			"wrap": false,
+			"map": [
+				"######D######",
+				"######4######",
+				"#S.3.#.#.7..#",
+				"#.#.##.##.#.#",
+				"#.2...5...6.#",
+				"#.#.##.##.#.#",
+				"#..8.#.#.1..#",
+				"#############"
+			],
+			"intro": [
+				"La puerta del norte tiene un 15 grabado.",
+				"Cada baldosa con número que pisas se enciende y se suma. Cada una suma una sola vez.",
+				"La puerta se abre solo si la suma es exactamente 15.",
+				"Si te pasas de 15, todas se apagan y la suma vuelve a 0."
+			]
+		},
+		{
+			"name": "Campo de Trampas",
+			"kind": "mines",
+			"mines": 10,
+			"torch": 0,
+			"wrap": false,
+			"requires_key": true,
+			"map": [
+				"###############",
+				"#.............#",
+				"#.???????????.#",
+				"#.???????????.#",
+				"#S???????????.E",
+				"#.???????????.#",
+				"#.???????????.#",
+				"#.............#",
+				"#######A#######"
+			],
+			"intro": [
+				"El suelo esconde 10 trampas. Puedes caminar sobre todas las baldosas sin peligro.",
+				"Párate sobre una baldosa y presiona Z para descubrirla. Con X pones o quitas una bandera.",
+				"Cada número dice cuántas trampas tocan esa baldosa, también en diagonal.",
+				"Si descubres una trampa, vuelves a la entrada y las trampas cambian de lugar.",
+				"Descubre todas las baldosas seguras y la pared agrietada se abrirá. Detrás está la llave de la puerta."
+			]
+		},
+		{
+			"name": "Sala Espejo",
+			"kind": "clock",
+			"red_period": 3,
+			"blue_period": 3,
+			"torch": 27,
+			"wrap": true,
+			"map": [
+				"####.########",
+				"#S..R..#...K#",
+				"#.####.#.##B#",
+				"#..B...R..#.#",
+				"##.#####.##..",
+				"...#E..B.....",
+				"##.#####R####",
+				"#....R.....##",
+				"####.########"
+			],
+			"intro": [
+				"La última sala. Rojas y azules se turnan cada 3 pasos.",
+				"Los bordes de esta sala están conectados: si sales por un lado, entras por el lado opuesto.",
+				"La salida solo se abre si llevas la LLAVE.",
+				"Mientras llevas la llave, cada paso hace avanzar el reloj de las piedras 2 veces."
+			]
+		}
+	],
+	"reference_solutions": {
+		"0": "RRDDRRUURRRRRRDDDD",
+		"1": "DUDDRRRRWRRUDDDRRRR",
+		"2": "DUDDRRDDWRRRRDDRRRR",
+		"3": "RRDDDDUURRRRRRRLLLLUUUU",
+		"5": "DDRDDLLLULUWUULLLDDDDWLLLL"
+	}
+}
